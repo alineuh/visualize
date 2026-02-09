@@ -1,10 +1,10 @@
-# Exemples de Résultats de Tests
+# Test Results Examples
 
-Ce document présente des exemples de sorties attendues lors de l'exécution de la suite de tests.
+This document presents examples of expected outputs when running the test suite.
 
 ---
 
-## 📊 Résumé Global
+## 📊 Global Summary
 
 ```
 ========================================
@@ -33,9 +33,9 @@ FAILED: 0
 
 ---
 
-## 🧪 Exemples de Tests Détaillés
+## 🧪 Detailed Test Examples
 
-### Test 1 : ShareFA2 - Minting
+### Test 1: ShareFA2 - Minting
 
 ```python
 TEST: ShareFA2 - Basic Functionality
@@ -73,7 +73,7 @@ TEST: ShareFA2 - Basic Functionality
 
 ---
 
-### Test 2 : Market - Cap Enforcement
+### Test 2: Market - Cap Enforcement
 
 ```python
 TEST: Market - Cap Enforcement
@@ -110,7 +110,7 @@ Setup:
 
 ---
 
-### Test 3 : Market - Piece Closure
+### Test 3: Market - Piece Closure
 
 ```python
 TEST: Market - Piece Closure
@@ -153,7 +153,7 @@ Funding Progress:
 
 ---
 
-### Test 4 : Integration - Full Workflow
+### Test 4: Integration - Full Workflow
 
 ```python
 TEST: Integration - Full Workflow
@@ -244,7 +244,7 @@ INTEGRATION TEST: ✅ PASSED
 
 ---
 
-## 🔍 Détails des Vérifications
+## 🔍 Verification Details
 
 ### Balance Tracking
 
@@ -311,9 +311,9 @@ Piece Lifecycle:
 
 ---
 
-## ⚠️ Exemples d'Erreurs Détectées
+## ⚠️ Detected Error Examples
 
-### Erreur 1 : Tentative de Mint Non Autorisée
+### Error 1: Unauthorized Mint Attempt
 
 ```
 Test: Unauthorized mint attempt
@@ -335,7 +335,7 @@ Error caught:
 
 ---
 
-### Erreur 2 : Dépassement de Cap
+### Error 2: Cap Exceeded
 
 ```
 Test: Exceed cap limit
@@ -363,7 +363,7 @@ Error caught:
 
 ---
 
-## 📈 Graphique de Couverture
+## 📈 Coverage Graph
 
 ```
 Entry Points Coverage:
@@ -392,62 +392,44 @@ Overall Coverage: 100%
 
 ---
 
-## ✅ Checklist de Validation
+## ✅ Validation Checklist
 
-### Fonctionnalités Core
-- [x] Création de collections
-- [x] Création de pièces avec NFT escrow
-- [x] Achat de parts fractionnées
-- [x] Minting de shares
-- [x] Transfert de shares
-- [x] Application du cap
-- [x] Fermeture automatique
-- [x] Paiement de l'artiste
+### Core Functionalities
+- [x] Collection creation
+- [x] Piece creation with NFT escrow
+- [x] Fractional share purchase
+- [x] Share minting
+- [x] Share transfers
+- [x] Cap enforcement
+- [x] Automatic closure
+- [x] Artist payment
 
-### Sécurité
-- [x] Permissions admin
-- [x] Permissions artiste
-- [x] Permissions opérateur
-- [x] Vérification de balance
-- [x] Validation des paramètres
-- [x] Protection contre overflow
-- [x] Protection contre reentrancy (non applicable en SmartPy)
+### Security
+- [x] Admin permissions
+- [x] Artist permissions
+- [x] Operator permissions
+- [x] Balance verification
+- [x] Parameter validation
+- [x] Overflow protection
+- [x] Reentrancy protection (not applicable in SmartPy)
 
 ### Edge Cases
 - [x] Cap 1%
 - [x] Cap 100%
-- [x] Montants fractionnels
-- [x] Plusieurs pièces
-- [x] Plusieurs collections
-- [x] Transferts multiples
-- [x] Opérateurs multiples
+- [x] Fractional amounts
+- [x] Multiple pieces
+- [x] Multiple collections
+- [x] Multiple transfers
+- [x] Multiple operators
 
-### Intégration
-- [x] Workflow complet
-- [x] Interaction contrats
-- [x] États cohérents
-- [x] Balances correctes
-- [x] Events (implicites)
-
----
-
-## 📝 Notes pour le Rapport
-
-**Points forts à mettre en avant** :
-
-1. **Couverture exhaustive** : 100% des entry points testés
-2. **Sécurité robuste** : 15+ cas d'erreur vérifiés
-3. **Tests réalistes** : Scénario d'intégration complet
-4. **Edge cases** : Caps extrêmes, montants fractionnels
-5. **Documentation** : Code commenté, README détaillé
-
-**Démontre** :
-- Maîtrise de SmartPy
-- Compréhension du use case
-- Rigueur professionnelle
-- Conscience de la sécurité
+### Integration
+- [x] Complete workflow
+- [x] Contract interactions
+- [x] Consistent states
+- [x] Correct balances
+- [x] Events (implicit)
 
 ---
 
-*Résultats générés pour le rendu du projet d'équipe*
-*Tous les tests doivent passer pour garantir la qualité du code*
+*Results generated for team project submission*
+*All tests must pass to ensure code quality*

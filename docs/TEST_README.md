@@ -1,207 +1,221 @@
-# Tests pour Fractional Art Marketplace
+# Tests for Fractional Art Marketplace
 
-Ce fichier contient une suite de tests complète pour les smart contracts `ShareFA2` et `FractionalArtMarketV1_FA2`.
+This file contains a comprehensive test suite for the `ShareFA2` and `FractionalArtMarketV1_FA2` smart contracts.
 
-## Structure des Tests
+## Test Structure
 
 ### 1. Mock NFT Contract
-- `MockNFT_FA2` : Un contrat FA2 NFT minimal pour tester l'escrow et le transfert de NFTs
+- `MockNFT_FA2`: Minimal FA2 NFT contract for testing NFT escrow and transfers
 
-### 2. Tests ShareFA2
+### 2. ShareFA2 Tests
 
-#### `test_share_fa2_basic` - Fonctionnalités de base
-- ✅ État initial du contrat
-- ✅ `set_admin` - transfert des droits d'admin au Market
-- ✅ Vérification que seul l'admin peut appeler `set_admin`
-- ✅ `mint` - minting de tokens
-- ✅ Vérification que seul l'admin peut mint
-- ✅ Impossible de mint 0 tokens
+#### `test_share_fa2_basic` - Basic Functionality
+- ✅ Initial contract state
+- ✅ `set_admin` - transfer admin rights to Market
+- ✅ Verify only admin can call `set_admin`
+- ✅ `mint` - token minting
+- ✅ Verify only admin can mint
+- ✅ Cannot mint 0 tokens
 
-#### `test_share_fa2_transfers` - Transferts et opérateurs
-- ✅ Transfert direct (propriétaire)
-- ✅ Erreur si balance insuffisante
-- ✅ Erreur si non autorisé (pas propriétaire ni opérateur)
-- ✅ Ajout d'un opérateur
-- ✅ Transfert via opérateur
-- ✅ Retrait d'un opérateur
-- ✅ Impossible de transférer après retrait de l'opérateur
-- ✅ Seul le propriétaire peut ajouter/retirer des opérateurs
+#### `test_share_fa2_transfers` - Transfers and Operators
+- ✅ Direct transfer (owner)
+- ✅ Error on insufficient balance
+- ✅ Error if unauthorized (not owner or operator)
+- ✅ Add operator
+- ✅ Transfer via operator
+- ✅ Remove operator
+- ✅ Cannot transfer after operator removal
+- ✅ Only owner can add/remove operators
 
-#### `test_share_fa2_multi_token` - Tokens multiples et transferts groupés
-- ✅ Minting de plusieurs token IDs
-- ✅ Transferts groupés de plusieurs token IDs
+#### `test_share_fa2_multi_token` - Multiple Tokens and Batched Transfers
+- ✅ Mint multiple token IDs
+- ✅ Batched transfers of multiple token IDs
 
-### 3. Tests Market
+### 3. Market Tests
 
-#### `test_market_collections` - Création de collections
-- ✅ Création de collection avec cap valide
-- ✅ Création de plusieurs collections
-- ✅ Erreur si cap trop bas (< 1%)
-- ✅ Erreur si cap trop haut (> 100%)
-- ✅ Cas limites : cap à 1% et 100%
+#### `test_market_collections` - Collection Creation
+- ✅ Create collection with valid cap
+- ✅ Create multiple collections
+- ✅ Error if cap too low (< 1%)
+- ✅ Error if cap too high (> 100%)
+- ✅ Edge cases: cap at 1% and 100%
 
-#### `test_market_piece_creation` - Création de pièces depuis NFT
-- ✅ Approbation du Market comme opérateur
-- ✅ Création de pièce depuis NFT (escrow du NFT)
-- ✅ Vérification du transfert du NFT au Market
-- ✅ Seul l'artiste peut créer une pièce
-- ✅ Erreur si collection inexistante
-- ✅ Erreur si prix à zéro
+#### `test_market_piece_creation` - Piece Creation from NFT
+- ✅ Market approval as operator
+- ✅ Piece creation from NFT (NFT escrow)
+- ✅ Verify NFT transfer to Market
+- ✅ Only artist can create piece
+- ✅ Error if collection doesn't exist
+- ✅ Error if price is zero
 
-#### `test_market_buying_basic` - Achat de parts (basique)
-- ✅ Achat de parts par un acheteur
-- ✅ Vérification de l'enregistrement de la contribution
-- ✅ Vérification du minting des shares (1:1 avec mutez)
-- ✅ Paiement immédiat de l'artiste (v1)
-- ✅ Plusieurs acheteurs peuvent contribuer
-- ✅ Un acheteur peut ajouter à sa contribution
-- ✅ Impossible d'acheter avec 0 tez
-- ✅ Erreur si pièce inexistante
+#### `test_market_buying_basic` - Share Purchase (Basic)
+- ✅ Share purchase by buyer
+- ✅ Verify contribution recording
+- ✅ Verify share minting (1:1 with mutez)
+- ✅ Immediate artist payment (v1)
+- ✅ Multiple buyers can contribute
+- ✅ Buyer can add to their contribution
+- ✅ Cannot buy with 0 tez
+- ✅ Error if piece doesn't exist
 
-#### `test_market_cap_enforcement` - Application du cap
-- ✅ Acheteur peut contribuer jusqu'au cap
-- ✅ Impossible de dépasser le cap
-- ✅ Impossible de dépasser le cap en un seul achat
+#### `test_market_cap_enforcement` - Cap Enforcement
+- ✅ Buyer can contribute up to cap
+- ✅ Cannot exceed cap
+- ✅ Cannot exceed cap in single purchase
 
-#### `test_market_piece_closure` - Fermeture de pièce
-- ✅ Plusieurs acheteurs financent la pièce
-- ✅ La pièce se ferme à 100% de financement
-- ✅ Impossible d'acheter depuis une pièce fermée
-- ✅ Impossible de surfinancer une pièce
+#### `test_market_piece_closure` - Piece Closure
+- ✅ Multiple buyers fund the piece
+- ✅ Piece closes at 100% funding
+- ✅ Cannot buy from closed piece
+- ✅ Cannot overfund piece
 
-#### `test_market_views` - Vues on-chain
-- ✅ `get_collection` retourne les bonnes infos
-- ✅ `get_piece` retourne les bonnes infos
-- ✅ `get_cap_amount` calcule correctement le cap
-- ✅ `get_user_contribution` avant et après achat
+#### `test_market_views` - On-chain Views
+- ✅ `get_collection` returns correct info
+- ✅ `get_piece` returns correct info
+- ✅ `get_cap_amount` calculates correctly
+- ✅ `get_user_contribution` before and after purchase
 
-#### `test_market_edge_cases` - Cas limites et complexes
-- ✅ Collection avec 100% cap (un seul acheteur peut tout financer)
-- ✅ Collection avec 1% cap (nécessite 100 acheteurs minimum)
-- ✅ Montants fractionnels en tez
-- ✅ Plusieurs pièces dans la même collection
-- ✅ Différents share_token_id par pièce
+#### `test_market_edge_cases` - Edge Cases and Complex Scenarios
+- ✅ Collection with 100% cap (single buyer can fund all)
+- ✅ Collection with 1% cap (requires 100 buyers minimum)
+- ✅ Fractional tez amounts
+- ✅ Multiple pieces in same collection
+- ✅ Different share_token_id per piece
 
-### 4. Test d'Intégration
+### 4. Integration Test
 
-#### `test_full_integration` - Workflow complet réaliste
-- ✅ Déploiement de tous les contrats
-- ✅ 2 artistes créent des collections avec des caps différents
-- ✅ Artistes créent plusieurs pièces
-- ✅ Plusieurs collectionneurs achètent des parts
-- ✅ Fermeture automatique des pièces
-- ✅ Transfert de shares entre collectionneurs
-- ✅ Financement complet avec respect des caps
-- ✅ Vérification des total_supply
+#### `test_full_integration` - Complete Realistic Workflow
+- ✅ Deploy all contracts
+- ✅ 2 artists create collections with different caps
+- ✅ Artists create multiple pieces
+- ✅ Multiple collectors purchase shares
+- ✅ Automatic piece closure
+- ✅ Share transfers between collectors
+- ✅ Complete funding with cap compliance
+- ✅ Verify total_supply
 
-## Exécuter les Tests
+---
 
-### Avec SmartPy CLI
+## Run Tests
+
+### With SmartPy CLI
 
 ```bash
-# Installer SmartPy
+# Install SmartPy
 sh <(curl -s https://smartpy.io/cli/install.sh)
 
-# Exécuter tous les tests
-~/smartpy-cli/SmartPy.sh test test_contracts.py /tmp/output
+# Run all tests
+~/smartpy-cli/SmartPy.sh test tests/test_contracts.py /tmp/output
 ```
 
-### Avec SmartPy Online IDE
+### With SmartPy Online IDE
 
-1. Aller sur https://smartpy.io/ide
-2. Créer un nouveau fichier
-3. Copier le contenu de `share_fa2.py`
-4. Créer un autre fichier et copier `market_v1_fa2.py`
-5. Créer un troisième fichier et copier `test_contracts.py`
-6. Cliquer sur "Run tests"
+1. Go to https://smartpy.io/ide
+2. Create a new file
+3. Copy content from `share_fa2.py`
+4. Create another file and copy `market_v1_fa2.py`
+5. Create a third file and copy `test_contracts.py`
+6. Click "Run tests"
 
-### Avec Taqueria (si configuré)
+### With Taqueria (if configured)
 
 ```bash
-# Dans le dossier du projet
+# In project folder
 taq test
 ```
 
-## Résultats Attendus
+---
 
-Tous les tests devraient passer avec succès. Voici ce qui est testé :
+## Expected Results
 
-### Couverture de Code
-- ✅ Tous les entry points
-- ✅ Tous les cas d'erreur (exceptions)
-- ✅ Cas limites (edge cases)
-- ✅ Scénarios d'intégration réalistes
+All tests should pass successfully. Here's what is tested:
 
-### Assertions Vérifiées
-- ✅ États du contrat (ledger, total_supply, etc.)
-- ✅ Balances de tokens
-- ✅ Opérateurs
+### Code Coverage
+- ✅ All entry points
+- ✅ All error cases (exceptions)
+- ✅ Edge cases
+- ✅ Realistic integration scenarios
+
+### Verified Assertions
+- ✅ Contract states (ledger, total_supply, etc.)
+- ✅ Token balances
+- ✅ Operators
 - ✅ Contributions
-- ✅ Fermeture de pièces
-- ✅ Paiements (balances des comptes)
-- ✅ Vues on-chain
+- ✅ Piece closure
+- ✅ Payments (account balances)
+- ✅ On-chain views
 
-## Structure des Tests SmartPy
+---
 
-Chaque test suit cette structure :
+## SmartPy Test Structure
+
+Each test follows this structure:
 
 ```python
-@sp.add_test(name="Nom du test")
+@sp.add_test(name="Test name")
 def test_function():
     scenario = sp.test_scenario()
-    scenario.h1("Titre principal")
+    scenario.h1("Main title")
     
-    # Setup : déploiement des contrats et comptes de test
+    # Setup: deploy contracts and test accounts
     
     scenario.h2("Test 1: Description")
-    # Appels de contrats
-    # Vérifications avec scenario.verify()
+    # Contract calls
+    # Verifications with scenario.verify()
     
     scenario.h2("Test 2: Description")
     # ...
 ```
 
-## Cas de Test Importants
+---
 
-### Sécurité
-- ✅ Seul l'admin peut mint (ShareFA2)
-- ✅ Seul l'artiste peut créer des pièces pour sa collection
-- ✅ Les opérateurs doivent être autorisés explicitement
-- ✅ Les caps sont strictement appliqués
+## Important Test Cases
 
-### Logique Métier
-- ✅ Shares mintées 1:1 avec les mutez contribués
-- ✅ Paiement immédiat de l'artiste (v1)
-- ✅ Fermeture automatique à 100% de financement
-- ✅ Impossible de surfinancer
-- ✅ NFT correctement mis en escrow
+### Security
+- ✅ Only admin can mint (ShareFA2)
+- ✅ Only artist can create pieces for their collection
+- ✅ Operators must be explicitly authorized
+- ✅ Caps are strictly enforced
 
-### Cas Limites
-- ✅ Cap à 1% (très fractionné)
-- ✅ Cap à 100% (acheteur unique possible)
-- ✅ Montants fractionnels
-- ✅ Plusieurs pièces par collection
-- ✅ Transferts de shares entre utilisateurs
+### Business Logic
+- ✅ Shares minted 1:1 with contributed mutez
+- ✅ Immediate artist payment (v1)
+- ✅ Automatic closure at 100% funding
+- ✅ Cannot overfund
+- ✅ NFT correctly escrowed
 
-## Notes pour le Rendu
+### Edge Cases
+- ✅ Cap at 1% (highly fractionalized)
+- ✅ Cap at 100% (single buyer possible)
+- ✅ Fractional amounts
+- ✅ Multiple pieces per collection
+- ✅ Share transfers between users
 
-Ces tests démontrent :
+---
 
-1. **Compréhension approfondie** : Tous les aspects des contrats sont testés
-2. **Sécurité** : Vérification des permissions et des cas d'erreur
-3. **Robustesse** : Tests de cas limites et edge cases
-4. **Intégration** : Scénario réaliste complet
-5. **Qualité professionnelle** : Structure claire, commentaires, assertions précises
+## Notes for Submission
 
-## Prochaines Étapes
+These tests demonstrate:
 
-Pour améliorer encore les tests :
+1. **Deep Understanding**: All aspects of contracts are tested
+2. **Security**: Verification of permissions and error cases
+3. **Robustness**: Edge case and boundary testing
+4. **Integration**: Complete realistic scenario
+5. **Professional Quality**: Clear structure, comments, precise assertions
 
-1. **Tests de performance** : Tester avec de grandes quantités de données
-2. **Tests de gas** : Mesurer la consommation de gas
-3. **Tests de concurrence** : Plusieurs acheteurs simultanés
-4. **Tests de migration** : Mise à jour de contrat (si applicable)
+---
+
+## Next Steps
+
+To further improve tests:
+
+1. **Performance tests**: Test with large datasets
+2. **Gas tests**: Measure gas consumption
+3. **Concurrency tests**: Multiple simultaneous buyers
+4. **Migration tests**: Contract upgrades (if applicable)
+
+---
 
 ## Contact
 
-Pour toute question sur les tests, référez-vous au code source qui est abondamment commenté.
+For questions about the tests, refer to the heavily commented source code.

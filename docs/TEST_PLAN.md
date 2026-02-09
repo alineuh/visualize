@@ -1,330 +1,253 @@
-# Plan de Tests - Fractional Art Marketplace
+# Test Plan - Fractional Art Marketplace
 
-## 📊 Vue d'Ensemble
+## 📊 Overview
 
-Ce document décrit les scénarios de tests pour valider le bon fonctionnement des smart contracts du projet Fractional Art Marketplace.
-
----
-
-## 🎯 Objectifs des Tests
-
-1. **Fonctionnalité** : Vérifier que tous les entry points fonctionnent correctement
-2. **Sécurité** : Garantir que les permissions sont respectées
-3. **Robustesse** : Tester les cas limites et edge cases
-4. **Intégration** : Valider l'interaction entre les contrats
+This document describes the test scenarios for validating the proper functioning of the Fractional Art Marketplace smart contracts.
 
 ---
 
-## 📋 Couverture des Tests
+## 🎯 Test Objectives
+
+1. **Functionality**: Verify all entry points work correctly
+2. **Security**: Ensure permissions are respected
+3. **Robustness**: Test edge cases and boundary conditions
+4. **Integration**: Validate contract interactions
+
+---
+
+## 📋 Test Coverage
 
 ### ShareFA2 Contract
 
-| Entry Point | Testé | Cas Positifs | Cas Négatifs |
-|-------------|-------|--------------|--------------|
-| `set_admin` | ✅ | Admin transfert droits | Non-admin tente transfert |
-| `mint` | ✅ | Admin mint shares | Non-admin tente mint, mint 0 |
-| `transfer` | ✅ | Propriétaire transfert, Opérateur transfert | Non-autorisé tente, balance insuffisante |
-| `update_operators` | ✅ | Propriétaire ajoute/retire | Non-propriétaire tente |
+| Entry Point | Tested | Positive Cases | Negative Cases |
+|-------------|--------|----------------|----------------|
+| `set_admin` | ✅ | Admin transfers rights | Non-admin attempts transfer |
+| `mint` | ✅ | Admin mints shares | Non-admin attempts mint, mint 0 |
+| `transfer` | ✅ | Owner transfers, Operator transfers | Unauthorized attempts, insufficient balance |
+| `update_operators` | ✅ | Owner adds/removes | Non-owner attempts |
 
 ### FractionalArtMarketV1_FA2 Contract
 
-| Entry Point | Testé | Cas Positifs | Cas Négatifs |
-|-------------|-------|--------------|--------------|
+| Entry Point | Tested | Positive Cases | Negative Cases |
+|-------------|--------|----------------|----------------|
 | `create_collection` | ✅ | Cap 1-100% | Cap < 1%, Cap > 100% |
-| `create_piece_from_nft` | ✅ | Artiste crée pièce | Non-artiste, collection inexistante, prix 0 |
-| `buy_piece` | ✅ | Achat valide, contributions multiples | Montant 0, dépasser cap, pièce fermée |
+| `create_piece_from_nft` | ✅ | Artist creates piece | Non-artist, missing collection, price 0 |
+| `buy_piece` | ✅ | Valid purchase, multiple contributions | Amount 0, exceeds cap, closed piece |
 
-### Vues On-chain
+### On-chain Views
 
-| Vue | Testée | Résultat Attendu |
-|-----|--------|------------------|
-| `get_collection` | ✅ | Retourne artist + cap_percent |
-| `get_piece` | ✅ | Retourne infos complètes pièce |
-| `get_user_contribution` | ✅ | Retourne montant contribué |
-| `get_cap_amount` | ✅ | Calcul correct (price × cap / 100) |
+| View | Tested | Expected Result |
+|------|--------|-----------------|
+| `get_collection` | ✅ | Returns artist + cap_percent |
+| `get_piece` | ✅ | Returns complete piece info |
+| `get_user_contribution` | ✅ | Returns contributed amount |
+| `get_cap_amount` | ✅ | Correct calculation (price × cap / 100) |
 
 ---
 
-## 🧪 Scénarios de Tests
+## 🧪 Test Scenarios
 
-### Scénario 1 : Workflow Basique Complet
+### Scenario 1: Complete Basic Workflow
 
-**Objectif** : Valider le cycle de vie complet d'une vente fractionnée
+**Objective**: Validate the complete lifecycle of a fractional sale
 
-**Étapes** :
-1. Admin déploie ShareFA2 avec son adresse comme admin
-2. Admin déploie Market avec référence à ShareFA2
-3. Admin transfert les droits d'admin de ShareFA2 au Market
-4. Artiste crée une collection avec cap 20%
-5. Artiste mint un NFT et approuve Market comme opérateur
-6. Artiste crée une pièce à 10 tez
-7. NFT est transféré en escrow au Market
-8. 5 acheteurs achètent 2 tez chacun (20% × 10 tez = 2 tez max)
-9. Shares sont mintées 1:1 (2 tez = 2_000_000 shares)
-10. Artiste reçoit paiement immédiatement (v1)
-11. Pièce se ferme automatiquement à 100%
+**Steps**:
+1. Admin deploys ShareFA2 with their address as admin
+2. Admin deploys Market with ShareFA2 reference
+3. Admin transfers ShareFA2 admin rights to Market
+4. Artist creates collection with 20% cap
+5. Artist mints NFT and approves Market as operator
+6. Artist creates piece at 10 tez
+7. NFT is transferred to Market escrow
+8. 5 buyers purchase 2 tez each (20% × 10 tez = 2 tez max)
+9. Shares are minted 1:1 (2 tez = 2,000,000 shares)
+10. Artist receives immediate payment (v1)
+11. Piece closes automatically at 100%
 
-**Résultats Attendus** :
+**Expected Results**:
 - ✅ ShareFA2.admin == Market.address
 - ✅ Piece.total_raised == 10 tez
 - ✅ Piece.closed == true
-- ✅ NFT chez Market : ledger[(Market, 0)] == 1
-- ✅ NFT plus chez artiste : ledger[(Artist, 0)] == 0
-- ✅ Chaque acheteur a 2_000_000 shares (token_id 0)
-- ✅ Total supply token 0 == 10_000_000
-- ✅ Artiste a reçu 10 tez
-
-**Assertions Clés** :
-```python
-scenario.verify(share.data.admin == market.address)
-scenario.verify(market.data.pieces[0].total_raised == sp.tez(10))
-scenario.verify(market.data.pieces[0].closed == True)
-scenario.verify(nft.data.ledger[sp.pair(market.address, 0)] == 1)
-scenario.verify(share.data.ledger[sp.pair(buyer1.address, 0)] == 2_000_000)
-scenario.verify(share.data.total_supply[0] == 10_000_000)
-```
+- ✅ NFT at Market: ledger[(Market, 0)] == 1
+- ✅ Each buyer has 2,000,000 shares (token_id 0)
+- ✅ Total supply token 0 == 10,000,000
 
 ---
 
-### Scénario 2 : Application Stricte du Cap
+### Scenario 2: Strict Cap Enforcement
 
-**Objectif** : Vérifier que le cap est strictement respecté
+**Objective**: Verify cap is strictly enforced
 
-**Configuration** :
-- Collection avec cap 25%
-- Pièce à 10 tez
-- Max par acheteur = 10 × 25 / 100 = 2.5 tez
+**Configuration**:
+- Collection with 25% cap
+- Piece at 10 tez
+- Max per buyer = 10 × 25 / 100 = 2.5 tez
 
-**Étapes** :
-1. Acheteur contribue 2 tez
-2. Acheteur contribue 0.5 tez supplémentaire (total = 2.5 tez ✅)
-3. Acheteur tente de contribuer 1 mutez de plus
-4. Transaction rejetée avec "OVER_CAP_SHARE"
+**Steps**:
+1. Buyer contributes 2 tez
+2. Buyer contributes 0.5 tez more (total = 2.5 tez ✅)
+3. Buyer attempts to contribute 1 mutez more
+4. Transaction rejected with "OVER_CAP_SHARE"
 
-**Résultats Attendus** :
-- ✅ Contribution 2.5 tez acceptée
-- ✅ Contribution 2.500001 tez rejetée
+**Expected Results**:
+- ✅ 2.5 tez contribution accepted
+- ✅ 2.500001 tez contribution rejected
 - ✅ contributions[(0, buyer)] == 2.5 tez
-- ✅ Shares == 2_500_000
-
-**Assertions Clés** :
-```python
-market.buy_piece(0).run(sender=buyer, amount=sp.tez(2))
-market.buy_piece(0).run(sender=buyer, amount=sp.mutez(500_000))
-scenario.verify(market.data.contributions[sp.pair(0, buyer.address)] == sp.mutez(2_500_000))
-
-market.buy_piece(0).run(
-    sender=buyer,
-    amount=sp.mutez(1),
-    valid=False,
-    exception="OVER_CAP_SHARE"
-)
-```
 
 ---
 
-### Scénario 3 : Fermeture Automatique
+### Scenario 3: Automatic Closure
 
-**Objectif** : Vérifier la fermeture automatique à 100%
+**Objective**: Verify automatic closure at 100%
 
-**Configuration** :
-- Pièce à 10 tez
-- Cap 20% (2 tez max par acheteur)
-- Nécessite au moins 5 acheteurs
+**Configuration**:
+- Piece at 10 tez
+- Cap 20% (2 tez max per buyer)
+- Requires at least 5 buyers
 
-**Étapes** :
-1. Buyer1 contribue 2 tez → total 2/10 (20%) → OPEN
-2. Buyer2 contribue 2 tez → total 4/10 (40%) → OPEN
-3. Buyer3 contribue 2 tez → total 6/10 (60%) → OPEN
-4. Buyer4 contribue 2 tez → total 8/10 (80%) → OPEN
-5. Buyer5 contribue 2 tez → total 10/10 (100%) → CLOSED ✅
-6. Buyer6 tente d'acheter → rejeté "PIECE_CLOSED"
+**Steps**:
+1. Buyer1 contributes 2 tez → total 2/10 (20%) → OPEN
+2. Buyer2 contributes 2 tez → total 4/10 (40%) → OPEN
+3. Buyer3 contributes 2 tez → total 6/10 (60%) → OPEN
+4. Buyer4 contributes 2 tez → total 8/10 (80%) → OPEN
+5. Buyer5 contributes 2 tez → total 10/10 (100%) → CLOSED ✅
+6. Buyer6 attempts purchase → rejected "PIECE_CLOSED"
 
-**Résultats Attendus** :
-- ✅ Piece.closed == false jusqu'au dernier achat
-- ✅ Piece.closed == true après dernier achat
-- ✅ Plus d'achats possibles après fermeture
-
-**Assertions Clés** :
-```python
-market.buy_piece(0).run(sender=buyer5, amount=sp.tez(2))
-scenario.verify(market.data.pieces[0].total_raised == sp.tez(10))
-scenario.verify(market.data.pieces[0].closed == True)
-
-market.buy_piece(0).run(
-    sender=buyer6,
-    amount=sp.tez(1),
-    valid=False,
-    exception="PIECE_CLOSED"
-)
-```
+**Expected Results**:
+- ✅ Piece.closed == false until last purchase
+- ✅ Piece.closed == true after last purchase
+- ✅ No more purchases allowed after closure
 
 ---
 
-### Scénario 4 : Cas Limites - Cap 1%
+### Scenario 4: Edge Case - 1% Cap
 
-**Objectif** : Tester la fractionalization extrême
+**Objective**: Test extreme fractionalization
 
-**Configuration** :
+**Configuration**:
 - Collection cap 1%
-- Pièce à 100 tez
-- Max par acheteur = 100 × 1 / 100 = 1 tez
-- **Nécessite 100 acheteurs minimum**
+- Piece at 100 tez
+- Max per buyer = 100 × 1 / 100 = 1 tez
+- **Requires 100 buyers minimum**
 
-**Étapes** :
-1. Acheteur contribue 1 tez (à la limite)
-2. Acheteur tente 1 mutez de plus → rejeté
-3. Nécessite 99 autres acheteurs pour compléter
-
-**Résultats Attendus** :
-- ✅ Cap strictement respecté à 1 tez
-- ✅ Fractionalization maximale garantie
-
-**Implications** :
-- Force vraiment la distribution
-- Empêche la centralisation
-- Garantit au moins 100 détenteurs
+**Expected Results**:
+- ✅ Cap strictly enforced at 1 tez
+- ✅ Maximum fractionalization guaranteed
+- ✅ Forces true distribution
 
 ---
 
-### Scénario 5 : Cas Limites - Cap 100%
+### Scenario 5: Edge Case - 100% Cap
 
-**Objectif** : Tester le cas où un seul acheteur peut tout financer
+**Objective**: Test case where single buyer can fund entirely
 
-**Configuration** :
+**Configuration**:
 - Collection cap 100%
-- Pièce à 5 tez
-- Max par acheteur = 5 × 100 / 100 = 5 tez
-- **Un seul acheteur peut financer entièrement**
+- Piece at 5 tez
+- Max per buyer = 5 × 100 / 100 = 5 tez
+- **Single buyer can fund entirely**
 
-**Étapes** :
-1. Acheteur unique contribue 5 tez
-2. Pièce se ferme immédiatement
-3. Acheteur possède 100% des shares (5_000_000)
-
-**Résultats Attendus** :
+**Expected Results**:
 - ✅ Piece.closed == true
-- ✅ Un seul propriétaire de shares
-- ✅ total_supply == 5_000_000
-
-**Usage** :
-- Collection "exclusive"
-- Vente directe fractionnée optionnelle
-- Artiste garde contrôle sur distribution
+- ✅ Single share owner
+- ✅ total_supply == 5,000,000
 
 ---
 
-### Scénario 6 : Montants Fractionnels
+### Scenario 6: Fractional Amounts
 
-**Objectif** : Valider le fonctionnement avec montants non-ronds
+**Objective**: Validate with non-round amounts
 
-**Configuration** :
-- Pièce à 3.333333 tez (3_333_333 mutez)
+**Configuration**:
+- Piece at 3.333333 tez (3,333,333 mutez)
 - Cap 33%
-- Max = 3_333_333 × 33 / 100 = 1_099_999 mutez
+- Max = 3,333,333 × 33 / 100 = 1,099,999 mutez
 
-**Étapes** :
-1. Acheteur contribue 1_099_999 mutez
-2. Shares mintées = 1_099_999 (1:1)
-3. Vérification des calculs précis
-
-**Résultats Attendus** :
-- ✅ Pas d'erreur d'arrondi
-- ✅ Calculs en mutez précis
-- ✅ Ratio 1:1 maintenu
+**Expected Results**:
+- ✅ No rounding errors
+- ✅ Precise mutez calculations
+- ✅ 1:1 ratio maintained
 
 ---
 
-### Scénario 7 : Transfert de Shares (Marché Secondaire)
+### Scenario 7: Share Transfers (Secondary Market)
 
-**Objectif** : Valider que les shares peuvent être échangées
+**Objective**: Validate shares can be traded
 
-**Étapes** :
-1. Buyer1 achète 2 tez de shares → 2_000_000 shares
-2. Buyer1 transfert 1_000_000 shares à Buyer2
-3. Vérification des balances
+**Steps**:
+1. Buyer1 purchases 2 tez shares → 2,000,000 shares
+2. Buyer1 transfers 1,000,000 shares to Buyer2
+3. Verify balances
 
-**Résultats Attendus** :
-- ✅ Buyer1 : 1_000_000 shares
-- ✅ Buyer2 : 1_000_000 shares (+ autres achats éventuels)
-- ✅ Total supply inchangé
-
-**Implications** :
-- Marché secondaire possible
-- Liquidité des parts
-- Shares transférables librement
+**Expected Results**:
+- ✅ Buyer1: 1,000,000 shares
+- ✅ Buyer2: 1,000,000 shares
+- ✅ Total supply unchanged
 
 ---
 
-### Scénario 8 : Plusieurs Pièces dans une Collection
+### Scenario 8: Multiple Pieces in Collection
 
-**Objectif** : Vérifier que plusieurs pièces peuvent coexister
+**Objective**: Verify multiple pieces can coexist
 
-**Configuration** :
-- 1 collection (cap 20%)
-- 3 pièces différentes
-- Share_token_id distincts pour chaque pièce
+**Configuration**:
+- 1 collection (20% cap)
+- 3 different pieces
+- Distinct share_token_id for each piece
 
-**Étapes** :
-1. Artiste crée 3 pièces
-2. Piece 0 → share_token_id 0
-3. Piece 1 → share_token_id 1
-4. Piece 2 → share_token_id 2
-5. Acheteur peut acheter des parts dans chaque pièce
-
-**Résultats Attendus** :
-- ✅ Share token IDs distincts
-- ✅ Total supplies séparés
-- ✅ Contributions indépendantes
+**Expected Results**:
+- ✅ Distinct share token IDs
+- ✅ Separate total supplies
+- ✅ Independent contributions
 
 ---
 
-### Scénario 9 : Sécurité - Permissions
+### Scenario 9: Security - Permissions
 
-**Objectif** : Vérifier que seuls les utilisateurs autorisés peuvent agir
+**Objective**: Verify only authorized users can act
 
-**Tests de Sécurité** :
+**Security Tests**:
 
-| Action | Acteur Autorisé | Acteur Non-Autorisé | Exception |
-|--------|----------------|---------------------|-----------|
-| set_admin | Admin actuel | Autre utilisateur | NOT_ADMIN |
-| mint | Market (admin) | Utilisateur lambda | NOT_ADMIN |
-| create_piece | Artiste de la collection | Autre artiste | NOT_ARTIST |
-| transfer shares | Propriétaire/Opérateur | Tiers | NOT_OPERATOR |
+| Action | Authorized Actor | Unauthorized Actor | Exception |
+|--------|-----------------|-------------------|-----------|
+| set_admin | Current admin | Other user | NOT_ADMIN |
+| mint | Market (admin) | Regular user | NOT_ADMIN |
+| create_piece | Collection artist | Other artist | NOT_ARTIST |
+| transfer shares | Owner/Operator | Third party | NOT_OPERATOR |
 
-**Résultats Attendus** :
-- ✅ Toutes les tentatives non-autorisées sont rejetées
-- ✅ Messages d'erreur appropriés
-
----
-
-### Scénario 10 : NFT Escrow
-
-**Objectif** : Garantir que le NFT est bien sécurisé
-
-**Vérifications** :
-
-**Avant create_piece** :
-- NFT chez artiste : ledger[(artist, 0)] == 1
-- NFT chez market : ledger[(market, 0)] == 0
-
-**Après create_piece** :
-- NFT chez artiste : ledger[(artist, 0)] == 0
-- NFT chez market : ledger[(market, 0)] == 1
-
-**Implications** :
-- ✅ NFT en escrow sécurisé
-- ✅ Artiste ne peut plus le vendre ailleurs
-- ✅ Base pour v2 (distribution NFT au closure)
+**Expected Results**:
+- ✅ All unauthorized attempts rejected
+- ✅ Appropriate error messages
 
 ---
 
-## 📊 Matrice de Couverture
+### Scenario 10: NFT Escrow
+
+**Objective**: Ensure NFT is properly secured
+
+**Verifications**:
+
+**Before create_piece**:
+- NFT at artist: ledger[(artist, 0)] == 1
+- NFT at market: ledger[(market, 0)] == 0
+
+**After create_piece**:
+- NFT at artist: ledger[(artist, 0)] == 0
+- NFT at market: ledger[(market, 0)] == 1
+
+**Implications**:
+- ✅ NFT in secure escrow
+- ✅ Artist cannot sell elsewhere
+- ✅ Foundation for v2 (NFT distribution at closure)
+
+---
+
+## 📊 Coverage Matrix
 
 ### Entry Points Coverage
 
-| Contract | Entry Point | Cas Positifs | Cas Négatifs | Couverture |
-|----------|-------------|--------------|--------------|------------|
+| Contract | Entry Point | Positive Cases | Negative Cases | Coverage |
+|----------|-------------|----------------|----------------|----------|
 | ShareFA2 | set_admin | 1 | 1 | 100% |
 | ShareFA2 | mint | 2 | 2 | 100% |
 | ShareFA2 | transfer | 3 | 2 | 100% |
@@ -333,49 +256,47 @@ market.buy_piece(0).run(
 | Market | create_piece_from_nft | 2 | 3 | 100% |
 | Market | buy_piece | 8 | 4 | 100% |
 
-**Total : 100% de couverture**
+**Total: 100% coverage**
 
 ---
 
-## ✅ Checklist de Validation
+## ✅ Validation Checklist
 
-Avant de considérer les tests comme complets :
-
-- [x] Tous les entry points testés
-- [x] Cas positifs couverts
-- [x] Cas d'erreur vérifiés
-- [x] Permissions testées
-- [x] Cas limites (1%, 100%)
-- [x] Montants fractionnels
-- [x] NFT escrow validé
-- [x] Shares minting 1:1
-- [x] Fermeture automatique
-- [x] Transferts secondaires
-- [x] Vues on-chain
+- [x] All entry points tested
+- [x] Positive cases covered
+- [x] Error cases verified
+- [x] Permissions tested
+- [x] Edge cases (1%, 100%)
+- [x] Fractional amounts
+- [x] NFT escrow validated
+- [x] Share minting 1:1
+- [x] Automatic closure
+- [x] Secondary transfers
+- [x] On-chain views
 
 ---
 
-## 🎓 Pour le Rendu
+## 🎓 Key Points
 
-**Points à mettre en avant** :
+**Highlights**:
 
-1. **Exhaustivité** : 10 scénarios couvrant tous les aspects
-2. **Sécurité** : Tous les cas d'erreur testés
-3. **Robustesse** : Cas limites et edge cases
-4. **Professionnalisme** : Documentation structurée
+1. **Comprehensive**: 10 scenarios covering all aspects
+2. **Security**: All error cases tested
+3. **Robustness**: Edge cases and boundary conditions
+4. **Professional**: Structured documentation
 
-**Réponses aux questions potentielles** :
+**Potential Questions**:
 
-- *"Comment savez-vous que ça marche ?"*
-  → "Nous avons documenté 10 scénarios de tests avec assertions précises"
+- *"How do you know it works?"*
+  → "We documented 10 test scenarios with precise assertions"
 
-- *"Avez-vous testé les cas d'erreur ?"*
-  → "Oui, voir matrice de couverture - tous les cas négatifs sont testés"
+- *"Did you test error cases?"*
+  → "Yes, see coverage matrix - all negative cases tested"
 
-- *"Et les edge cases ?"*
-  → "Scénarios 4 et 5 testent cap 1% et 100%, scénario 6 teste montants fractionnels"
+- *"What about edge cases?"*
+  → "Scenarios 4 and 5 test 1% and 100% cap, scenario 6 tests fractional amounts"
 
 ---
 
-*Document créé pour le projet Fractional Art Marketplace*
-*Tests basés sur test_contracts.py*
+*Created for Fractional Art Marketplace project*
+*Tests based on test_contracts.py*
