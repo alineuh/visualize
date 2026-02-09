@@ -373,11 +373,9 @@ This test suite demonstrates:
 
 ## 👥 Contribution
 
-**Test Lead**: [Your Name]
-**Team**: [Team Name]
-**Project**: Fractional Art Marketplace
+**Test Lead**:
+Aline - [GitHub Profile](https://github.com/alineuh)
+**Contracts**: Aya - [GitHub Profile](https://github.com/ayabelarbi)
+**Project**: Fractional Art Marketplace : Visualize
 **Technology**: SmartPy / Tezos
 
----
-
-*Document created for team project submission*
