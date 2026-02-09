@@ -213,9 +213,3 @@ To further improve tests:
 2. **Gas tests**: Measure gas consumption
 3. **Concurrency tests**: Multiple simultaneous buyers
 4. **Migration tests**: Contract upgrades (if applicable)
-
----
-
-## Contact
-
-For questions about the tests, refer to the heavily commented source code.
