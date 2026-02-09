@@ -159,14 +159,3 @@ visualize/
 └── README.md
 ```
 
----
-
-## Contributing
-
-This is a team project. For questions or contributions, please contact the team members.
-
----
-
-## License
-
-[Add your license here]
