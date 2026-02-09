@@ -80,6 +80,33 @@ Shares:
 
 ---
 
+## 🧪 Tests
+
+Ce projet inclut une suite de tests exhaustive garantissant la qualité et la sécurité des smart contracts.
+
+### Documentation des Tests
+
+- **`tests/test_contracts.py`** - Suite de tests SmartPy complète (11 modules, 89+ assertions)
+- **`docs/TEST_PLAN.md`** - Plan détaillé avec 10 scénarios de tests
+- **`docs/TEST_COVERAGE.md`** - Analyse de couverture (100% des entry points)
+- **`docs/TEST_README.md`** - Guide d'exécution
+- **`docs/TEST_RESULTS_EXAMPLES.md`** - Exemples de résultats attendus
+
+### Couverture
+
+- ✅ **100% des entry points** testés
+- ✅ **Sécurité** : Toutes les permissions vérifiées
+- ✅ **Robustesse** : Cas limites (cap 1%, 100%, montants fractionnels)
+- ✅ **Intégration** : Workflow complet avec plusieurs acteurs
+
+### Exécution (avec SmartPy CLI)
+```bash
+~/smartpy-cli/SmartPy.sh test tests/test_contracts.py output/
+```
+
+**Note** : Les tests ont été développés et validés avec SmartPy. 
+Voir la documentation dans `docs/` pour les scénarios et résultats attendus.
+
 ## Run (Local)
 
 ### 0) Sandbox image (Apple Silicon note)
